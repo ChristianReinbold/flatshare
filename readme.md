@@ -4,7 +4,7 @@ FlatShare
 FlatShare is a small Windows-only tool that supports German landlords and main tenants of shared flats in accounting and issuing of service charge bills. Use it to
 - get warned about missing payments and/or refunds,
 - generate tax reports for your yearly tax declaration ([Example](/samples/2018_tax_report.pdf)),
-- generate service charge bills as ready-to-send pdf files ([Example 1](/samples/2025-10-18_Emilia_Musterfrau.pdf), [Example 2](/samples/2025-10-18_Max_Mustermann.pdf)).
+- generate service charge bills as ready-to-send pdf files ([Example 1](/samples/bill_Emilia_Musterfrau.pdf), [Example 2](/samples/bill_Max_Mustermann.pdf)).
 
 ![Service charge bill](samples/anschreiben.png "service charge bill")
 
