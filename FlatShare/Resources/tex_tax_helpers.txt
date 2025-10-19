@@ -1,0 +1,13 @@
+tenant_transaction_entry(e) ::= <<
+	<if(e.IsImportant)>\textcolor{red}{\textbf{<e.Amount>}}<else><e.Amount><endif> & <#\#\>
+	<if(e.IsOverwriting)><#\#\>
+		\multicolumn{5}{l}{<if(e.IsImportant)>\textcolor{red}{\textbf{<e.Reason>}}<else><e.Reason><endif>}<#\#\>
+	<else><#\#\>
+		<e.Reason> & <e.Due> & & <#\#\>
+		<if(e.OtherYear)><#\#\>
+			\multicolumn{2}{c}{In Steuerbericht <e.OtherYear>}<#\#\>
+		<else><#\#\>
+			<e.Net> & <e.Ancillary><#\#\>
+		<endif><#\#\>
+	<endif> \\
+>>

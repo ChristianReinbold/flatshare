@@ -1,0 +1,9 @@
+deploy/
+packages/
+build/
+.vs/
+*.csproj.user
+
+# MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*

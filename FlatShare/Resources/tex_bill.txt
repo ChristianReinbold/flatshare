@@ -1,0 +1,247 @@
+\documentclass[fontsize=12pt]{scrartcl}
+
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+
+\usepackage{scrletter}
+\LoadLetterOption{DIN}
+\LoadLetterOption{sender} % Read sender.lco
+
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{eurosym}
+\usepackage{lastpage}
+\usepackage{hyperref}
+
+\usepackage{booktabs}
+\usepackage{ltablex}
+\keepXColumns
+
+%dashed line
+\usepackage{array}
+\usepackage{arydshln}
+\setlength\dashlinedash{0.2pt}
+\setlength\dashlinegap{1.5pt}
+\setlength\arrayrulewidth{0.3pt}
+
+\clubpenalty10000
+\widowpenalty10000
+\displaywidowpenalty=10000
+
+\newcommand\rotated[1]{\multicolumn{1}{c}{\rotatebox{90}{#1}}}
+
+\begin{document}
+
+\begin{letter}{%
+  <if(is_male)>Herr<else>Frau<endif> <tenant.Title>\\
+  <tenant.Name>\\
+  <adress_line; separator="#\n">%
+}
+
+% Footer
+\renewcommand\pagemark{%
+	\usekomafont{pageheadfoot}\usekomafont{pagefoot}\usekomafont{pagenumber}%
+	Seite \thepage{}~von~\pageref{LastPage}%
+}
+\let\letterpagemark\pagemark
+
+\parindent 0cm
+\parskip 4pt
+
+\setkomavar{yourref}{}
+\setkomavar{yourmail}{}
+\setkomavar{myref}{}
+\setkomavar{customer}{}
+\setkomavar{invoice}{}
+\setkomavar{place}{Musterstadt}	% TODO: Update address of your shared float
+\setkomavar{date}{<creation_date>}
+\setkomavar{subject}{Nebenkostenabrechnung <from> -- <to>}
+
+\opening{Liebe<if(is_male)>r<endif> <tenant.FirstName>,}
+
+hiermit erhältst du die Nebenkostenabrechnung unserer WG (Musterstrasse 6, Musterstadt) für den Abrechnungszeitraum <from> -- <to>. Insgesamt sind Kosten von <total_costs_incl_currency> enstanden, dein Anteil beträgt <share_costs_incl_currency>. Nach Verrechnung deiner Vorauszahlungen von <prepayment> ergibt sich eine <if(is_refund)>\textbf{Rückerstattung von <balance>}<if(account)> auf das folgende Konto:<else>. Bitte nenne mir zwecks Überweisung deine Bankverbindung.<endif><else>\textbf{Nachzahlung von <balance>}. Bitte überweise diesen Betrag bis zu dem <due_date> auf das folgende Konto:<endif> 	% TODO: Update address of your shared float
+
+<if(account)>\begin{center}
+	\begin{tabular}{ll}
+		Kontoinhaber: & <account.Owner> \\
+		IBAN: & <account.IBAN> <if(account.BIC)>\\
+		BIC: & <account.BIC><endif>
+	\end{tabular}
+\end{center}<endif>
+
+<if(adjust)>Die Nebenkostenvorauszahlung wird auf <adjust.Prepayment> angepasst. \textbf{Bitte überweise ab dem <adjust.Date> monatlich eine Warmmiete von <adjust.Total> bei unveränderter Kaltmiete.}<endif>
+
+\closing{Liebe Grüße,}
+
+\ps Hinweis: Abweichungen im Centbereich bei Summenbildung und Anteilsberechnung sind auf Rundung der Zwischenergebnisse auf Centbeträge zurückzuführen. Es gilt stets das jeweilige Endergebnis.
+
+\small
+\pagebreak
+\section*{Kostenaufstellung}
+
+\begin{tabularx}{\textwidth}{@{}llX<keys:{x | r#\}>Xrr@{}}
+	\multicolumn{<n_keys_plus_6>}{c}{\normalsize\bfseries\sffamily Aufgeschlüsselt nach Zeitraum}\\
+	\smallskip\\
+	\toprule
+	\multicolumn{2}{c}{\textbf{Zeitraum}} & & \multicolumn{<length(keys)>}{c}{\textbf{Umlageschlüssel}} & & \multicolumn{2}{c}{\textbf{Kosten} (in <currency_symbol>)} \\ \cmidrule{1-2} \cmidrule{4-<n_keys_plus_3>} \cmidrule{<n_keys_plus_5>-<n_keys_plus_6>}
+	\textbf{von} & \textbf{bis} & & <keys:{k | \textbf{<k>}#\}; separator=" & "> & & \textbf{Gesamt} & \textbf{Anteil} \\
+	\toprule
+	\endfirsthead
+	\toprule
+	\multicolumn{2}{c}{\textbf{Zeitraum}} & & \multicolumn{<length(keys)>}{c}{\textbf{Umlageschlüssel}} & & \multicolumn{2}{c}{\textbf{Kosten} (in <currency_symbol>)} \\ \cmidrule{1-2} \cmidrule{4-<n_keys_plus_3>} \cmidrule{<n_keys_plus_5>-<n_keys_plus_6>}
+	\textbf{von} & \textbf{bis} & & <keys:{k | \textbf{<k>}#\}; separator=" & "> & & \textbf{Gesamt} & \textbf{Anteil} \\
+	\toprule
+	\endhead
+	<if(costs_per_interval)><costs_per_interval:{l | <#\#\>
+	  <l.From> & <l.To> & & <l.Allocations; separator=" & "> & & <l.Total> & \textbf{<l.Share>} \\<if(l.Dash)>* \hdashline<endif><#\#\>
+	#\}; separator="#\n">* \midrule<endif>
+	\textbf{Summe} & & & &<keys:{x |  &#\}> <total_costs> & \textbf{<share_costs>} \\*
+	\bottomrule
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{@{}lXrr@{}}
+	\multicolumn{4}{c}{\normalsize\bfseries\sffamily Aufgeschlüsselt nach Posten}\\
+	\smallskip\\
+	\toprule
+	\textbf{Posten} & \textbf{Umlage} & \multicolumn{2}{c}{\textbf{Kosten} (in <currency_symbol>)} \\ \cmidrule{3-4}
+	                &                 & \textbf{Gesamt} & \textbf{Anteil} \\
+	\toprule
+	\endfirsthead
+	\toprule
+	\textbf{Posten} & \textbf{Umlage} & \multicolumn{2}{c}{\textbf{Kosten} (in <currency_symbol>)} \\ \cmidrule{3-4}
+	                &                 & \textbf{Gesamt} & \textbf{Anteil} \\
+	\toprule
+	\endhead
+	<if(costs_per_position)><costs_per_position:{l | <#\#\>
+	  <l.Name> & <l.Key> & <l.Total> & \textbf{<l.Share>} \\<if(l.Dash)>* \hdashline<endif><#\#\>
+	#\}; separator="#\n">* \midrule<endif>
+	\textbf{Summe} & & <total_costs> & \textbf{<share_costs>} \\*
+	\bottomrule
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{p{0.5cm}@{}lXrr@{}}
+	\multicolumn{5}{c}{\normalsize\bfseries\sffamily Aufgeschlüsselt nach Zeitraum und Posten}\\
+	\smallskip\\
+	\toprule
+	& \textbf{Posten} & \textbf{Umlage} & \multicolumn{2}{c}{\textbf{Kosten} (in <currency_symbol>)} \\ \cmidrule{4-5}
+	&                 &                 & \textbf{Gesamt} & \textbf{Anteil} \\
+	\toprule
+	\endfirsthead
+	\toprule
+	& \textbf{Posten} & \textbf{Umlage} & \multicolumn{2}{c}{\textbf{Kosten} (in <currency_symbol>)} \\ \cmidrule{4-5}
+	&                 &                 & \textbf{Gesamt} & \textbf{Anteil} \\
+	\toprule
+	\endhead
+	<detailed_blocks:{b | <#\#\>
+	  \multicolumn{5}{l}{\textbf{<b.From> -- <b.To>} \hfill <b.Allocations:{a | <a.Key>: <a.RelativeShare>#\};separator=" \hfill "> \hfill\ } \\* \midrule
+	  <b.Lines:{l | <#\#\>
+		  & <l.Name> & <l.Key> & <l.Total> & \textbf{<l.Share>} \\<if(l.Dash)>* \cdashline{2-5}<endif><#\#\>
+      #\}; separator="#\n">* \cmidrule{2-5}
+	  & \textbf{Summe} & & <b.Total> & \textbf{<b.Share>} \\*<#\#\>
+	#\};separator=" \midrule#\n">
+	\bottomrule
+\end{tabularx}
+
+<if(meters)><#\#\>
+\pagebreak
+\section*{Zählerstände}
+
+<meters:{m | <#\#\>
+\begin{tabularx}{\textwidth}{@{}llXrrrX<m.PosNames:{x | r#\}>@{}}
+	\multicolumn{<m.PosCountPlusSeven>}{c}{\normalsize\sffamily {\bfseries <m.Name>} - Zählernummer: <m.Id>}\\
+	\smallskip\\
+	\toprule
+	\multicolumn{2}{c}{\textbf{Zeitraum}} & & \multicolumn{3}{c}{\textbf{Stand} (in <m.Unit>)} & & \multicolumn{<length(m.PosNames)>}{c}{\textbf{Verbrauchskosten} (in \EUR{})} \\
+	\cmidrule{1-2} \cmidrule{4-6} \cmidrule{8-<m.PosCountPlusSeven>}
+	\textbf{von} & \textbf{bis}           & & \textbf{Anfang} & \textbf{Ende} & \textbf{Diff.} & & <m.PosNames:{c | \textbf{<c>} #\};separator=" & "> \\ \toprule
+	\endfirsthead
+	\toprule
+	\multicolumn{2}{c}{\textbf{Zeitraum}} & & \multicolumn{3}{c}{\textbf{Stand} (in <m.Unit>)} & & \multicolumn{<length(m.PosNames)>}{c}{\textbf{Verbrauchskosten} (in \EUR{})} \\
+	\cmidrule{1-2} \cmidrule{4-6} \cmidrule{8-<m.PosCountPlusSeven>}
+	\textbf{von} & \textbf{bis}           & & \textbf{Anfang} & \textbf{Ende} & \textbf{Diff.} & & <m.PosNames:{c | \textbf{<c>} #\};separator=" & "> \\ \toprule
+	\endhead
+	<m.Lines:{l | <#\#\>
+	  <l.From> & <l.To> & & <l.Start> & <l.End> & <l.Diff> & & <l.Costs;separator=" & "> \\<if(l.Dash)>* \hdashline<endif><#\#\>
+	#\}; separator="#\n">* \midrule
+	\textbf{Summe} &        & &       &       & <m.DiffSum> & & <m.PosSums;separator=" & "> \\*
+	\bottomrule
+\end{tabularx} <#\#\>
+#\};separator="#\n#\n"><#\#\>
+<endif>
+
+<if(co2)><#\#\>
+\pagebreak
+\section*{Kohlendioxidkosten}
+
+Die durch das Heizen anfallenden Kohlendioxidkosten werden separat zu den regulären Heizkosten abgerechnet und nach §5 Abs. 1 des Kohlendioxidkostenaufteilungsgesetzes (CO2KostAufG) zwischen Mieter und Vermieter aufgeteilt. Der Aufteilungsschlüssel wird hierbei auf Basis des Kohlendioxidausstoßes pro Quadratmeter Wohnfläche und Jahr bestimmt und kann anhand der Anlage ``Einstufung der Gebäude oder der Wohnungen bei Wohngebäuden'' des CO2KostAufG bestimmt werden. Folgende Rechnungen legen eine Wohnfläche von <co2.LivingSpaceSize>qm zugrunde.
+
+\begin{tabularx}{\textwidth}{@{}llXrXrXrr@{}}
+	\multicolumn{9}{c}{\normalsize\bfseries\sffamily Kohlendioxidkosten}\\
+	\smallskip\\
+	\toprule
+	\multicolumn{2}{c}{\textbf{Zeitraum}} & & \textbf{$CO_2$ Emission} & & \textbf{Mieteranteil} & & \multicolumn{2}{c}{\textbf{Kosten} (in \EUR{})} \\
+	\cmidrule{1-2} \cmidrule{8-9}
+	\textbf{von} & \textbf{bis} & &  \multicolumn{1}{c}{(in kg)} & & & & \textbf{Gesamt} & \textbf{Mieter} \\ \toprule
+	\endfirsthead
+	\toprule
+	\multicolumn{2}{c}{\textbf{Zeitraum}} & & \textbf{$CO_2$ Emission} & & \textbf{Mieteranteil} & & \multicolumn{2}{c}{\textbf{Kosten} (in \EUR{})} \\
+	\cmidrule{1-2} \cmidrule{8-9}
+	\textbf{von} & \textbf{bis} & &  \multicolumn{1}{c}{(in kg)} & & & & \textbf{Gesamt} & \textbf{Mieter} \\ \toprule
+	\endhead
+	<co2.CostsLines:{l | <#\#\>
+	  <l.From> & <l.To> & & <l.Emission> & & <l.Key> & & <l.Total> & \textbf{<l.Share>} \\<if(l.Dash)>* \hdashline<endif><#\#\>
+	#\}; separator="#\n">* \midrule
+	\textbf{Summe} & & & & & & & <co2.CostsTotal> & \textbf{<co2.CostsShare>} \\*
+	\bottomrule
+\end{tabularx} <#\#\>
+
+\begin{tabularx}{\textwidth}{@{}lXrrXr@{}}
+	\multicolumn{6}{c}{\normalsize\bfseries\sffamily Berechnung des Mieteranteils nach Anlage CO2KostAufG}\\
+	\smallskip\\
+	\toprule
+	\textbf{Jahr} & & \multicolumn{2}{c}{\textbf{$CO_2$ Emission}} & & \textbf{Mieteranteil} \\
+	\cmidrule{3-4}
+	& & \textbf{gesamt} (in kg) &  \textbf{je qm} (in kg/$m^2$) & & \\ \toprule
+	\endfirsthead
+	\toprule
+	\textbf{Jahr} & & \multicolumn{2}{c}{\textbf{$CO_2$ Emission}} & & \textbf{Mieteranteil} \\
+	\cmidrule{3-4}
+	& & \textbf{gesamt} (in kg) &  \textbf{je qm (in kg/$m^2$)} & & \\ \toprule
+	\endhead
+	<co2.EmissionLines:{l | <#\#\>
+	  <l.Year> & & <l.Emission> & <l.EmissionPerSqm> & & <l.Key> \\<if(l.Dash)>* \hdashline<endif><#\#\>
+	#\}; separator="#\n">*
+	\bottomrule
+\end{tabularx} <#\#\>
+<endif>
+
+<if(living_space_tables)><#\#\>
+\pagebreak
+\section*{Wohnflächenberechnung}
+
+% Prevent longtable page breaks by wrapping tabularx up in a table environment.
+% We do not want to break due to the large head with rotated intervals.
+% Hopefully we will never have more rooms than would fit on one page.
+<living_space_tables:{t | <#\#\>
+\begin{table}[H]
+	\begin{tabularx}{\linewidth}{@{}lr<t.Intervals:{i | Xr#\}>X@{}}
+		\textbf{Zimmer} & \rotated{\textbf{Fläche} (in <t.Unit>)} & & <t.Intervals:{s | \rotated{<s>}#\};separator=" & & "> & \\
+		\toprule
+		<t.Lines:{l | <#\#\>
+		  <l.Room> & \textbf{<l.Size>} & & <l.Shares;separator=" & & "> & \\<if(l.Dash)>* \hdashline<endif><#\#\>
+		#\}; separator="#\n">* \midrule
+		\textbf{Summe} (in <t.Unit>) & \textbf{<t.TotalSum>} & & <t.AbsShareSums:{s | \textbf{<s>}\hphantom{\%}#\};separator=" & & "> & \\* \midrule
+		\textbf{Anteil}              &                       & & <t.ShareSums;separator=" & & "> & \\
+		\bottomrule
+	\end{tabularx}
+\end{table} <#\#\>
+#\};separator="#\n#\n"><#\#\>
+<endif>
+
+\begin{flushright}
+Created with the open source project FlatShare.\\
+\url{https://github.com/ChristianReinbold/flatshare}
+\end{flushright}
+
+\end{letter}
+\end{document}

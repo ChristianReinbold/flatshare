@@ -1,0 +1,44 @@
+\ProvidesFile{sender.lco}
+
+\KOMAoptions{%
+firsthead=true,
+fromemail=true,
+fromphone=true,
+fromfax=false,
+fromurl=false,
+fromlogo=true,
+locfield=wide,
+fromalign=right,
+fromrule=afteraddress%
+}
+
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[ngerman]{babel}
+
+ % TODO: Insert your personal data here
+
+\setkomavar{fromname}{Anna Vermieterin}
+\setkomavar{fromaddress}{%
+  Musterstrasse 6\\
+  1234 Musterstadt%
+}
+
+\setkomavar{fromemail}{meine@mustermail.de}
+\setkomavar{fromphone}{+49~151~111~222~333}
+
+\setkomavar{fromlogo}{%
+  \parbox[b][2.8cm][c]{11.5cm}{%
+    \usekomafont{fromaddress}%
+    \Large \bfseries \itshape \usekomavar{fromname}%
+  }
+}
+
+% TODO: Make sure to replace signature.pdf with your signature.
+% Do not forget to tweak spacings and image parameters until the signature is correctly formatted.
+
+\setkomavar{signature}{%
+  \vspace*{-1.5cm}\\%
+  \includegraphics[scale=0.13, trim=0.2cm 1.05cm 0.2cm 0.1cm]{signature.pdf} \\%
+  \usekomavar{fromname}%
+}
+\renewcommand*{\raggedsignature}{\raggedright}
