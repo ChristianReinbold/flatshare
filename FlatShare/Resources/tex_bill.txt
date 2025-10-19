@@ -239,7 +239,7 @@ Die durch das Heizen anfallenden Kohlendioxidkosten werden separat zu den regul√
 <endif>
 
 \begin{flushright}
-Created with the open source project FlatShare.\\
+Erstellt mit dem Open-Source-Projekt FlatShare.\\
 \url{https://github.com/ChristianReinbold/flatshare}
 \end{flushright}
 

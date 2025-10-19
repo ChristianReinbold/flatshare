@@ -124,7 +124,7 @@
 \end{tabularx}
 
 \begin{flushright}
-Created with the open source project FlatShare.\\
+Erstellt mit dem Open-Source-Projekt FlatShare.\\
 \url{https://github.com/ChristianReinbold/flatshare}
 \end{flushright}
 
